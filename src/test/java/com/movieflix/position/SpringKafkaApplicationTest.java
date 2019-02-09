@@ -1,7 +1,5 @@
 package com.movieflix.position;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +21,18 @@ public class SpringKafkaApplicationTest {
     @Autowired
     private Sender sender;
 
+//    private CountDownLatch latch = new CountDownLatch(1);
+
+//    public CountDownLatch getLatch() {
+//        return latch;
+//    }
 
     @Test
     public void testReceive() throws Exception {
         sender.send("Hello Spring Kafka ABC!");
         //TODO:Add flush
 
-        receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
+        //receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
         //assertThat(receiver.getLatch().getCount()).isEqualTo(0);
     }
 }
