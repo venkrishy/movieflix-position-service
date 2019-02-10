@@ -29,7 +29,7 @@ public class SpringKafkaApplicationTest {
 
     @Test
     public void testReceive() throws Exception {
-        sender.send("Hello Spring Kafka ABC!");
+        sender.sendToPositionTopic("Hello Spring Kafka ABC!");
         //TODO:Add flush
 
         //receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
