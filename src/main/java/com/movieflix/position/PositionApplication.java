@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PositionApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PositionApplication.class, args);
+            SpringApplication.run(PositionApplication.class, args);
     }
 
 }
