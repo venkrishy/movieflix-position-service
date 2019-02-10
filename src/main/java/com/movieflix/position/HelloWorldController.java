@@ -14,17 +14,20 @@ import com.movieflix.position.producer.Sender;
 
 @RestController
 @Slf4j
-public class PositionController {
+public class HelloWorldController {
 
     @Autowired
     private Sender send;
 
     @GetMapping("/hello")
     public Map<String, String> hello() throws Exception {
-        this.send.send("foo1");
-        this.send.send("foo2");
-        this.send.send("foo3");
-        log.info("Three Sent");
+        log.info("Hello World Invoked");
         return Collections.singletonMap("response", "hello world");
+    }
+
+    @GetMapping("/")
+    public Map<String, String> root() throws Exception {
+        log.info("Root Invoked");
+        return Collections.singletonMap("response", "Root URL Invoked");
     }
 }
