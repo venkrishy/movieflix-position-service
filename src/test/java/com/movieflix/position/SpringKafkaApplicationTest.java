@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.movieflix.position.consumer.Receiver;
+import com.movieflix.position.consumer.PositionConsumer;
 import com.movieflix.position.producer.Sender;
 
 @RunWith(SpringRunner.class)
@@ -16,7 +16,7 @@ import com.movieflix.position.producer.Sender;
 public class SpringKafkaApplicationTest {
 
     @Autowired
-    private Receiver receiver;
+    private PositionConsumer positionConsumer;
 
     @Autowired
     private Sender sender;
@@ -29,7 +29,7 @@ public class SpringKafkaApplicationTest {
 
     @Test
     public void testReceive() throws Exception {
-        sender.sendToPositionTopic("Hello Spring Kafka ABC!");
+//        sender.sendToPositionTopic("Hello Spring Kafka ABC!");
         //TODO:Add flush
 
         //receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);

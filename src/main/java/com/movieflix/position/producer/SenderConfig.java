@@ -11,11 +11,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
+
+import com.movieflix.position.Position;
 
 @Configuration
 public class SenderConfig {
 
-    @Value("${kafka.bootstrap-servers}")
+    @Value("${kafka.bootstrap-servers:localhost}")
     private String bootstrapServers;
 
     @Value("${kafka.username}")
@@ -33,7 +36,7 @@ public class SenderConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                 StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+                JsonSerializer.class);
         String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
         String jaasCfg = String.format(jaasTemplate, username, password);
 
@@ -44,12 +47,12 @@ public class SenderConfig {
     }
 
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, Position> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
+    public KafkaTemplate<String, Position> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
