@@ -5,12 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 
 import com.movieflix.position.InMemoryDatabase;
-import com.movieflix.position.Recommendation;
+import com.movieflix.position.Trend;
 
 @Data
 @Slf4j
@@ -19,12 +20,13 @@ public class RecommendationConsumer {
     @Autowired
     InMemoryDatabase inMemoryDatabase;
 
-    @KafkaListener(topics = "${kafka.topic.recommendation}")
-    public void consumeFromRecommendationTopic(@Payload Recommendation recommendation,
-                        @Headers MessageHeaders headers) {
-        inMemoryDatabase.getRecommendations().add(recommendation);
-        log.info("received recommendation='{}'", recommendation);
+    @KafkaListener(topics = "${kafka.topic.recommendation}", containerFactory = "kafkaListenerContainerFactoryStringLong")
+    public void consumeFromRecommendationTopic(@Payload Long count,
+                                         @Headers MessageHeaders headers) {
+        Object key = headers.get(KafkaHeaders.RECEIVED_MESSAGE_KEY);
+        Trend trend = new Trend(key, count);
+        inMemoryDatabase.getTrends().add(trend);
+        log.info("received Recommendation='{}'", trend);
     }
-
 
 }

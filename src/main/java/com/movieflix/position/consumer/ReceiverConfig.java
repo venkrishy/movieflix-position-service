@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,8 @@ public class ReceiverConfig {
     @Value("${kafka.password}")
     private String password;
 
+    @Value("${currentProfile}")
+    private String currentProfile;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -53,9 +56,12 @@ public class ReceiverConfig {
         String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
         String jaasCfg = String.format(jaasTemplate, username, password);
 
-        props.put("security.protocol", "SASL_SSL");
-        props.put("sasl.mechanism", "SCRAM-SHA-256");
-        props.put("sasl.jaas.config", jaasCfg);
+        if (!currentProfile.equals("local")) {
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.mechanism", "SCRAM-SHA-256");
+            props.put("sasl.jaas.config", jaasCfg);
+        }
+
 
         return props;
     }
@@ -80,6 +86,24 @@ public class ReceiverConfig {
     public PositionConsumer positionConsumer() {
         return new PositionConsumer();
     }
+
+
+    @Bean
+    public ConsumerFactory<String, Long> consumerFactoryStringLong() {
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                new LongDeserializer());
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Long> kafkaListenerContainerFactoryStringLong() {
+        ConcurrentKafkaListenerContainerFactory<String, Long> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryStringLong());
+        return factory;
+    }
+
 
     @Bean
     public RecommendationConsumer recommendationConsumer() {

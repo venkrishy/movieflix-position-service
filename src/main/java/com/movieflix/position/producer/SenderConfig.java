@@ -27,6 +27,9 @@ public class SenderConfig {
     @Value("${kafka.password}")
     private String password;
 
+    @Value("${currentProfile}")
+    private String currentProfile;
+
     @Bean
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -40,9 +43,11 @@ public class SenderConfig {
         String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
         String jaasCfg = String.format(jaasTemplate, username, password);
 
-        props.put("security.protocol", "SASL_SSL");
-        props.put("sasl.mechanism", "SCRAM-SHA-256");
-        props.put("sasl.jaas.config", jaasCfg);
+        if (!currentProfile.equals("local")) {
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.mechanism", "SCRAM-SHA-256");
+            props.put("sasl.jaas.config", jaasCfg);
+        }
         return props;
     }
 

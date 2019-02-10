@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class InMemoryDatabase {
     List<Position> positions = new ArrayList<>();
 
-    List<Recommendation> recommendations = new ArrayList<>();
+    List<Trend> trends = new ArrayList<>();
 
     List<Title> titles = Arrays.asList(
             new Title("The Hobbit: The Battle of the Five Armies"),
@@ -54,7 +54,7 @@ public class InMemoryDatabase {
         return positions;
     }
 
-    public List<Recommendation> getRecommendations() {
-        return recommendations;
+    public List<Trend> getTrends() {
+        return trends;
     }
 }
