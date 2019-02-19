@@ -19,13 +19,29 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+//TODO: Research further  Spring Cloud DataFlow which is on top of Spring Cloud Stream
+//TODO: Use streamsBuilderFactoryBean https://stackoverflow.com/questions/51733039/kafka-streams-with-spring-boot/51958629
+// You can start and stop its stream using kStreamBuilderFactory.start();
+// kStreamBuilderFactory.setUncaughtExceptionHandler((thread, throwable) -> log.error("UncaughtExceptionHandler " + throwable.getMessage()));
+// @PostConstruct start stream
+// @PreDestroy stop stream
+// use state stores kStreamBuilder.addStateStore(supplier);
+// KeyValue.pair(key, objectMapper.readValue(value, clazz)); if exception is thrown, return KeyValue.pair(key, null);
+//kStream.process(processSupplier, supplierNames.toArray(new String[supplierNames.size()]));
+//@EventListener(ContextRefreshedEvent.class)
+//public void initializeStream() {
+//        if (streamProperties.isSeekToEndOnStartup()) {
+//        resetOffset(new ResetOffset(0, null, -1, null));
+//        }
+//        startStream();
+//        }
 public class TrendKafkaStream {
 
     @Value("${kafka.bootstrap-servers:localhost}")
     private String bootstrapServers;
 
-    @Value("${kafka.groupId}")
-    private String groupId;
+    @Value("${kafka.trend.applicationId}")
+    private String trendApplicationId;
 
     @Value("${kafka.autoreset}")
     private String autoreset;
@@ -64,7 +80,7 @@ public class TrendKafkaStream {
 
 //        final Serde<Position> positionSerde = Serdes.serdeFrom(positionSerializer, pageViewDeserializer);
 
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "z3l1kzly-titlecount");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, trendApplicationId);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(
                 StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
@@ -75,10 +91,10 @@ public class TrendKafkaStream {
         props.put(
                 StreamsConfig.STATE_DIR_CONFIG,
                 System.getProperty("user.home") + "/kafkatemp");
-        String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-        String jaasCfg = String.format(jaasTemplate, username, password);
 
         if (!currentProfile.equals("local")) {
+            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
+            String jaasCfg = String.format(jaasTemplate, username, password);
             props.put("security.protocol", "SASL_SSL");
             props.put("sasl.mechanism", "SCRAM-SHA-256");
             props.put("sasl.jaas.config", jaasCfg);

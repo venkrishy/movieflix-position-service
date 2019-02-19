@@ -1,0 +1,3 @@
+#Works with Google cloud datastore, google's nosql database (like firebase, mongobdb).
+#index.yaml can be used For storing database indexes.
+#This file must be deployed separately. gcloud app deploy index.yaml

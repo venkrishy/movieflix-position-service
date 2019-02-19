@@ -4,7 +4,6 @@ package com.movieflix.position;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.movieflix.position.consumer.PositionConsumer;
 import com.movieflix.position.producer.Sender;
 
 @RestController
@@ -24,16 +22,7 @@ public class PositionController {
     Sender sender;
 
     @Autowired
-    PositionConsumer positionConsumer;
-
-    @Autowired
     InMemoryDatabase inMemoryDatabase;
-
-
-    @GetMapping("/")
-    public Map<String, String> hello() {
-        return Collections.singletonMap("response", "Hello World");
-    }
 
     @GetMapping("/position/produce")
     public Map<String, Object> producePositions() {
@@ -61,14 +50,6 @@ public class PositionController {
         }
         ret.put("comment", "Random User watched a random title and stopped watching at a random position");
         ret.put("positions", positions);
-        return ret;
-    }
-
-    @GetMapping("/users")
-    public Map<String, List<String>> getUsers() {
-        Map<String, List<String>> ret = new HashMap<>();
-        List<String> users = inMemoryDatabase.getUsers();
-        ret.put("users", users);
         return ret;
     }
 

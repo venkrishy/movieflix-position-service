@@ -15,6 +15,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
+import com.movieflix.position.Employees;
 import com.movieflix.position.Position;
 
 @Configuration
@@ -53,10 +54,10 @@ public class ReceiverConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         // automatically reset the offset to the earliest offset
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoreset);
-        String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-        String jaasCfg = String.format(jaasTemplate, username, password);
 
         if (!currentProfile.equals("local")) {
+            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
+            String jaasCfg = String.format(jaasTemplate, username, password);
             props.put("security.protocol", "SASL_SSL");
             props.put("sasl.mechanism", "SCRAM-SHA-256");
             props.put("sasl.jaas.config", jaasCfg);
@@ -83,12 +84,6 @@ public class ReceiverConfig {
     }
 
     @Bean
-    public PositionConsumer positionConsumer() {
-        return new PositionConsumer();
-    }
-
-
-    @Bean
     public ConsumerFactory<String, Long> consumerFactoryStringLong() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfigs(),
@@ -104,10 +99,36 @@ public class ReceiverConfig {
         return factory;
     }
 
+    @Bean
+    public ConsumerFactory<String, Employees> consumerFactoryEmployee() {
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                new JsonDeserializer<>(Employees.class));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Employees> kafkaListenerContainerFactoryEmployee() {
+        ConcurrentKafkaListenerContainerFactory<String, Employees> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryEmployee());
+        return factory;
+    }
+
 
     @Bean
     public RecommendationConsumer recommendationConsumer() {
         return new RecommendationConsumer();
+    }
+
+    @Bean
+    public PositionConsumer positionConsumer() {
+        return new PositionConsumer();
+    }
+
+    @Bean
+    public EmployeeConsumer employeeConsumer() {
+        return new EmployeeConsumer();
     }
 
 }

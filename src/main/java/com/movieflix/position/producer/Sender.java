@@ -9,6 +9,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
+import com.movieflix.position.Employees;
 import com.movieflix.position.Position;
 
 public class Sender {
@@ -18,6 +19,9 @@ public class Sender {
 
     @Autowired
     private KafkaTemplate<String, Position> kafkaTemplate;
+
+    @Value("${kafka.topic.employee}")
+    private String employeeTopic;
 
     @Value("${kafka.topic.position}")
     private String positionTopic;
@@ -34,4 +38,20 @@ public class Sender {
 
         //                .setHeader(JsonSerializer.ADD_TYPE_INFO_HEADERS, false)
     }
+
+
+    public void sendToEmployeeTopic(String id, Employees employee) {
+        LOGGER.info("sending payload='{}'", employee);
+        Message<Employees> message = MessageBuilder
+                .withPayload(employee)
+                .setHeader(KafkaHeaders.MESSAGE_KEY, id)
+                .setHeader(KafkaHeaders.TOPIC, employeeTopic)
+                .build();
+
+        kafkaTemplate.send(message);
+
+        //                .setHeader(JsonSerializer.ADD_TYPE_INFO_HEADERS, false)
+    }
+
+
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class InMemoryDatabase {
+    List<Employees> employees = new ArrayList<>();
+
     List<Position> positions = new ArrayList<>();
 
     List<Trend> trends = new ArrayList<>();
@@ -56,5 +58,9 @@ public class InMemoryDatabase {
 
     public List<Trend> getTrends() {
         return trends;
+    }
+
+    public List<Employees> getEmployees() {
+        return employees;
     }
 }

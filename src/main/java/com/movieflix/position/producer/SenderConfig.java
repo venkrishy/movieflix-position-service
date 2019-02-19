@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.movieflix.position.Position;
@@ -51,14 +52,25 @@ public class SenderConfig {
         return props;
     }
 
+//    @Bean
+//    @ConfigurationProperties("orderslotting.kafka")
+//    public KafkaProperties producerFactory() {
+//        return new KafkaProperties();
+//    }
+
+
     @Bean
     public ProducerFactory<String, Position> producerFactory() {
+        //producerFactory().buildProducerProperties if using Spring Framework's Kafka Properties d
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
     public KafkaTemplate<String, Position> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+        KafkaTemplate<String, Position> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+        //logs exceptions thrown when sending messages
+        kafkaTemplate.setProducerListener(new LoggingProducerListener<String, Position>());
+        return kafkaTemplate;
     }
 
     @Bean
